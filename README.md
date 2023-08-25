@@ -1,3 +1,6 @@
+# Projekat Sandra 60/2020
+
+
 # project_base
 Prazan projekat sa pratećim bibliotekama koje koristimo na času. 
 
