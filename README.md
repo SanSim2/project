@@ -5,7 +5,7 @@ slike za skybox iz Lycksele su rotirane jer na mom laptopu je moralo tako
 -
 -
 
-# oblast A:
+# oblast A: Pomocu cubemaps je uradjena pozadina
 
 # oblast B:
 
