@@ -1,5 +1,5 @@
 # Projekat Sandra 60/2020
-
+slike za skybox iz Lycksele su rotirane jer na mom laptopu je moralo tako
 
 # Dugmici:
 -
