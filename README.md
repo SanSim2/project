@@ -1,6 +1,16 @@
 # Projekat Sandra 60/2020
 
 
+# Dugmici:
+-
+-
+
+# oblast A:
+
+# oblast B:
+
+
+
 # project_base
 Prazan projekat sa pratećim bibliotekama koje koristimo na času. 
 
