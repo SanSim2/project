@@ -53,8 +53,8 @@ struct PointLight {
 };
 
 struct ProgramState {
-    glm::vec3 clearColor = glm::vec3(0);
-    bool ImGuiEnabled = false;
+    glm::vec3 clearColor = glm::vec3(0.5,0.5,0.5);
+    bool ImGuiEnabled = true;
     Camera camera;
     bool CameraMouseMovementUpdateEnabled = true;
     glm::vec3 position = glm::vec3(0.0f,1.5f,-4.0f);
@@ -141,14 +141,13 @@ int main() {
     stbi_set_flip_vertically_on_load(true);
 
     programState = new ProgramState;
-
-    //programState->LoadFromFile("resources/program_state.txt");
+    programState->LoadFromFile("resources/program_state.txt");
 
     if (programState->ImGuiEnabled) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
     // Init Imgui
-    /*IMGUI_CHECKVERSION();
+    IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
     (void) io;
@@ -156,7 +155,7 @@ int main() {
 
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 330 core");*/
+    ImGui_ImplOpenGL3_Init("#version 330 core");
 
     // configure global opengl state
     // -----------------------------
@@ -299,7 +298,7 @@ int main() {
         // don't forget to enable shader before setting uniforms
         modelShader.use();
         // * cos(currentFrame), , * sin(currentFrame)
-        pointLight.position = glm::vec3(4.0 , 4.0f, 4.0 );
+        pointLight.position = glm::vec3(2.0 , 2.0f, 2.0 );
         modelShader.setVec3("pointLight.position", pointLight.position);
         modelShader.setVec3("pointLight.ambient", pointLight.ambient);
         modelShader.setVec3("pointLight.diffuse", pointLight.diffuse);
@@ -323,24 +322,30 @@ int main() {
         model = glm::scale(model, glm::vec3(programState->scale));    // it's a bit too big for our scene, so scale it down
         modelShader.setMat4("model", model);
         ourModel.Draw(modelShader);
+        if (programState->ImGuiEnabled){
+            glClearColor(programState->clearColor.r, programState->clearColor.g, programState->clearColor.b, 1.0f);
+            DrawImGui(programState);
+
+        } else {
+            // skybox crtamo poslednji
+            glDepthFunc(GL_LEQUAL);
+            skyboxShader.use();
+            view = glm::mat4(glm::mat3(programState->camera.GetViewMatrix()));
+            skyboxShader.setMat4("view", view);
+            skyboxShader.setMat4("projection", projection);
+            // skybox cube
+            glBindVertexArray(skyboxVAO);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+            glBindVertexArray(0);
+            glDepthFunc(GL_LESS);
+        }
 
 
-        // skybox crtamo poslednji
-        glDepthFunc(GL_LEQUAL);
-        skyboxShader.use();
-        view = glm::mat4(glm::mat3(programState->camera.GetViewMatrix()));
-        skyboxShader.setMat4("view", view);
-        skyboxShader.setMat4("projection", projection);
-        // skybox cube
-        glBindVertexArray(skyboxVAO);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-        glDepthFunc(GL_LESS);
 
-        /*if (programState->ImGuiEnabled)
-             DrawImGui(programState);*/
+
+        //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 
 
@@ -349,11 +354,13 @@ int main() {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+    glDeleteVertexArrays(1,&skyboxVAO);
+    glDeleteBuffers(1, &skyboxVBO);
+
 
     programState->SaveToFile("resources/program_state.txt");
     delete programState;
-    glDeleteVertexArrays(1,&skyboxVAO);
-    glDeleteBuffers(1, &skyboxVBO);
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
@@ -413,6 +420,7 @@ void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
 }
 
 void DrawImGui(ProgramState *programState) {
+
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -424,8 +432,8 @@ void DrawImGui(ProgramState *programState) {
         ImGui::Text("Hello text");
         ImGui::SliderFloat("Float slider", &f, 0.0, 1.0);
         ImGui::ColorEdit3("Background color", (float *) &programState->clearColor);
-        ImGui::DragFloat3("Backpack position", (float*)&programState->position);
-        ImGui::DragFloat("Backpack scale", &programState->scale, 0.05, 0.1, 4.0);
+        ImGui::DragFloat3(" position", (float*)&programState->position);
+        ImGui::DragFloat(" scale", &programState->scale, 0.05, 0.1, 4.0);
 
         ImGui::DragFloat("pointLight.constant", &programState->pointLight.constant, 0.05, 0.0, 1.0);
         ImGui::DragFloat("pointLight.linear", &programState->pointLight.linear, 0.05, 0.0, 1.0);
@@ -448,7 +456,7 @@ void DrawImGui(ProgramState *programState) {
 }
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
-    if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
+    if (key == GLFW_KEY_G && action == GLFW_PRESS) {
         programState->ImGuiEnabled = !programState->ImGuiEnabled;
         if (programState->ImGuiEnabled) {
             programState->CameraMouseMovementUpdateEnabled = false;

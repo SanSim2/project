@@ -2,7 +2,7 @@
 slike za skybox iz Lycksele su rotirane jer na mom laptopu je moralo tako
 
 # Dugmici:
--
+- klikom na dugme G aktivira se ImGui, i gasi se skybox pri aktivaciji
 -
 
 # oblast A: Pomocu cubemaps je uradjena pozadina
